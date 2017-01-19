@@ -1,29 +1,28 @@
-description "etherpad-lite"
+description "ethercalc"
 
 start on started networking
 stop on runlevel [!2345]
 
-env EPHOME=<%= @base_install_dir %>/etherpad-lite
-env EPLOGS=<%= @base_log_dir %>/<%= @ep_user %>
-env EPUSER=<%= @ep_user %>
+env ETHERCALC_HOME=<%= @base_install_dir %>
+env ETHERCALC_LOGS=<%= @base_log_dir %>/<%= @ethercalc_user %>
+env ETHERCALC_USER=<%= @ethercalc_user %>
 
 respawn
 
 pre-start script
-    chdir $EPHOME
-    mkdir $EPLOGS                              ||true
-    chown -R $EPUSER:admin $EPLOGS             ||true
-    chmod 0755 $EPLOGS                         ||true
-    chown -R $EPUSER:admin $EPHOME/var         ||true
-    bin/installDeps.sh >> $EPLOGS/error.log || { stop; exit 1; }
+    chdir $ETHERCALC_HOME
+    mkdir $ETHERCALC_LOGS                              ||true
+    chown -R $ETHERCALC_USER:admin $ETHERCALC_LOGS     ||true
+    chmod 0755 $ETHERCALC_LOGS                         ||true
+    chown -R $ETHERCALC_USER:admin $ETHERCALC_HOME/var ||true
 end script
 
-setuid <%= @ep_user %>
-setgid <%= @ep_user %>
+setuid <%= @ethercalc_user %>
+setgid <%= @ethercalc_user %>
 limit nofile 8192 16384
 script
-  cd $EPHOME
-  /usr/local/bin/node --stack_size=1968 node_modules/ep_etherpad-lite/node/server.js \
-                        >> $EPLOGS/access.log \
-                        2>> $EPLOGS/error.log
+  cd $ETHERCALC_HOME
+  /bin/bash node_modules/ethercalc/bin/run.sh \
+                        >> $ETHERCALC_LOGS/access.log \
+                        2>> $ETHERCALC_LOGS/error.log
 end script

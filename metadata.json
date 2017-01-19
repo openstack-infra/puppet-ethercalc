@@ -1,11 +1,15 @@
 {
-  "name": "openstackinfra-etherpad_lite",
+  "name": "openstackinfra-ethercalc",
   "version": "0.0.1",
   "author": "Openstack CI",
-  "summary": "Puppet module for Etherpad Lite",
+  "summary": "Puppet module for Ethercalc",
   "license": "Apache 2.0",
-  "source": "git://git.openstack.org/openstack-infra/puppet-etherpad_lite.git",
+  "source": "git://git.openstack.org/openstack-infra/puppet-ethercalc.git",
   "project_page": "http://docs.openstack.org/infra/system-config/",
-  "issues_url": "https://storyboard.openstack.org/#!/project/800",
-  "dependencies": []
+  "issues_url": "https://storyboard.openstack.org/#!/project/858",
+  "dependencies": [
+    {"name":"openstackinfra/httpd"},
+    {"name":"openstackinfra/redis"},
+    {"name":"voxpupuli/nodejs"}
+  ]
 }

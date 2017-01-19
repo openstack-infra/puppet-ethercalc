@@ -1,52 +1,43 @@
-# == Class: etherpad_lite
+# == Class: ethercalc
 #
-# Class to install etherpad lite. Puppet acts a lot like a package manager
-# through this class.
+# Class to install ethercalc.
 #
-# To use etherpad lite you will want the following includes:
-# include etherpad_lite
-# include etherpad_lite::mysql # necessary to use mysql as the backend
-# include etherpad_lite::site # configures etherpad lite instance
-# include etherpad_lite::apache # will add reverse proxy on localhost
+# To use ethercalc you will want the following includes:
+# include ethercalc
+# include ethercalc::redis # necessary to use mysql as the backend
+# include ethercalc::site # configures ethercalc instance
+# include ethercalc::apache # will add reverse proxy on localhost
 # The defaults for all the classes should just work (tm)
 #
 #
-class etherpad_lite (
-  $base_install_dir = '/opt/etherpad-lite',
+class ethercalc (
+  $base_install_dir = '/opt/ethercalc',
   $base_log_dir     = '/var/log',
-  $ep_ensure        = 'present',
-  $ep_user          = 'eplite',
-  $eplite_version   = 'develop',
+  $ethercalc_user   = 'ethercalc',
+  $ethercalc_version= '0.20161220.1',
   # If set to system will install system package.
-  $nodejs_version   = 'node_0.10',
+  $nodejs_version   = 'node_4.x',
 ) {
 
-  # where the modules are, needed to easily install modules later
-  $modules_dir = "${base_install_dir}/etherpad-lite/node_modules"
-  $path = "/usr/local/bin:/usr/bin:/bin:${base_install_dir}/etherpad-lite"
+  $path = '/usr/local/bin:/usr/bin:/bin'
 
-  user { $ep_user:
-    shell   => '/usr/sbin/nologin',
-    home    => "${base_log_dir}/${ep_user}",
-    system  => true,
-    gid     => $ep_user,
-    require => Group[$ep_user],
-  }
-
-  group { $ep_user:
+  group { $ethercalc_user:
     ensure => present,
   }
 
-  # Below is what happens when you treat puppet as a package manager.
-  # This is probably bad, but it works and you don't need to roll .debs.
+  user { $ethercalc_user:
+    shell   => '/usr/sbin/nologin',
+    home    => $base_install_dir,
+    system  => true,
+    gid     => $ethercalc_user,
+    require => Group[$ethercalc_user],
+  }
+
   file { $base_install_dir:
     ensure => directory,
-    group  => $ep_user,
+    owner  => $ethercalc_user,
+    group  => $ethercalc_user,
     mode   => '0664',
-  }
-
-  package { 'abiword':
-    ensure => present,
   }
 
   package { 'curl':
@@ -76,48 +67,61 @@ class etherpad_lite (
 
   anchor { 'nodejs-anchor': }
 
-  vcsrepo { "${base_install_dir}/etherpad-lite":
-    ensure   => $ep_ensure,
-    provider => git,
-    source   => 'https://github.com/ether/etherpad-lite.git',
-    owner    => $ep_user,
-    revision => $eplite_version,
-    require  => [
-        Package['git'],
-        User[$ep_user],
-    ],
+  exec { 'install-ethercalc':
+    command => "npm install ethercalc@${ethercalc_version}",
+    unless  => "npm ls --parseable | grep ethercalc@${ethercalc_version}",
+    path    => $path,
+    cwd     => $base_install_dir,
+    require => Anchor['nodejs-anchor'],
   }
 
-  exec { 'install_etherpad_dependencies':
-    command     => './bin/installDeps.sh',
-    path        => $path,
-    user        => $ep_user,
-    cwd         => "${base_install_dir}/etherpad-lite",
-    environment => "HOME=${base_log_dir}/${ep_user}",
-    require     => [
-      Package['curl'],
-      Vcsrepo["${base_install_dir}/etherpad-lite"],
-      Anchor['nodejs-anchor'],
-    ],
-    before      => File["${base_install_dir}/etherpad-lite/settings.json"],
-    creates     => "${base_install_dir}/etherpad-lite/node_modules",
-  }
-
-  file { '/etc/init/etherpad-lite.conf':
+  file { '/etc/init/ethercalc.conf':
     ensure  => present,
-    content => template('etherpad_lite/upstart.erb'),
+    content => template('ethercalc/upstart.erb'),
     replace => true,
     owner   => 'root',
   }
 
-  file { '/etc/init.d/etherpad-lite':
+  file { '/etc/init.d/ethercalc':
     ensure => link,
     target => '/lib/init/upstart-job',
   }
 
-  file { "${base_log_dir}/${ep_user}":
+  file { "${base_log_dir}/${ethercalc_user}":
     ensure => directory,
-    owner  => $ep_user,
+    owner  => $ethercalc_user,
   }
-  # end package management ugliness
+
+  service { 'ethercalc':
+    ensure  => running,
+    enable  => true,
+    require => File['/etc/init/ethercalc.conf'],
+  }
+
+  include ::logrotate
+  logrotate::file { 'ethercalc_error':
+    log     => "${base_log_dir}/${ethercalc_user}/error.log",
+    options => [
+      'compress',
+      'copytruncate',
+      'missingok',
+      'rotate 7',
+      'daily',
+      'notifempty',
+    ],
+    require => Service['ethercalc'],
+  }
+
+  logrotate::file { 'ethercalc_access':
+    log     => "${base_log_dir}/${ethercalc_user}/access.log",
+    options => [
+      'compress',
+      'copytruncate',
+      'missingok',
+      'rotate 7',
+      'daily',
+      'notifempty',
+    ],
+    require => Service['ethercalc'],
+  }
 }

@@ -1,3 +1,3 @@
-# OpenStack Etherpad Lite Module
+# OpenStack Ethercalc Module
 
-This module installs and configures Etherpad Lite
+This module installs and configures Ethercalc

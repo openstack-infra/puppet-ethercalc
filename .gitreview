@@ -1,4 +1,4 @@
 [gerrit]
 host=review.openstack.org
 port=29418
-project=openstack-infra/puppet-etherpad_lite.git
+project=openstack-infra/puppet-ethercalc.git

@@ -9,9 +9,9 @@
 # MaxClients: maximum number of simultaneous client connections
 # MaxRequestsPerChild: maximum number of requests a server process serves
 #
-# Etherpad Lite clients create a lot of connections. To be able to support
+# Ethercalc clients create a lot of connections. To be able to support
 # Several hundred concurrent users we need to make sure that we allow a few
-# thousand concurrent connections. This should be ok as typical etherpad use
+# thousand concurrent connections. This should be ok as typical ethercalc use
 # involves a couple writers then a bunch of lurkers. The cost of lurkers
 # is basically the TCP connection as they don't create DB writes and so on.
 # In addition to allowing for connection growth, keep a healthy number of

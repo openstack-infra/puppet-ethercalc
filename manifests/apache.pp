@@ -1,7 +1,7 @@
-# == Class: etherpad_lite::apache
+# == Class: ethercalc::apache
 #
-class etherpad_lite::apache (
-  $docroot                 = '/srv/etherpad-lite',
+class ethercalc::apache (
+  $docroot                 = '/srv/ethercalc',
   $serveradmin             = "webmaster@${::fqdn}",
   $ssl_cert_file           = '',
   $ssl_cert_file_contents  = '', # If left empty puppet will not create file.
@@ -36,7 +36,7 @@ class etherpad_lite::apache (
     port     => 443,
     docroot  => $docroot,
     priority => '50',
-    template => 'etherpad_lite/etherpadlite.vhost.erb',
+    template => 'ethercalc/ethercalc.vhost.erb',
     ssl      => true,
   }
 
@@ -52,6 +52,11 @@ class etherpad_lite::apache (
   }
   if !defined(Mod['proxy_http']) {
     httpd::mod { 'proxy_http':
+      ensure => present,
+    }
+  }
+  if !defined(Mod['proxy_wstunnel']) {
+    httpd::mod { 'proxy_wstunnel':
       ensure => present,
     }
   }
@@ -88,7 +93,7 @@ class etherpad_lite::apache (
       owner   => 'root',
       group   => 'root',
       mode    => '0644',
-      source  => 'puppet:///modules/etherpad_lite/apache-connection-tuning',
+      source  => 'puppet:///modules/ethercalc/apache-connection-tuning',
       notify  => Service['httpd'],
       require => File['/etc/apache2/conf.d'],
     }
@@ -105,7 +110,7 @@ class etherpad_lite::apache (
       owner   => 'root',
       group   => 'root',
       mode    => '0644',
-      source  => 'puppet:///modules/etherpad_lite/apache-connection-tuning',
+      source  => 'puppet:///modules/ethercalc/apache-connection-tuning',
       require => File['/etc/apache2/conf-available'],
     }
 
@@ -133,7 +138,7 @@ class etherpad_lite::apache (
 
   file { "${docroot}/robots.txt":
     ensure  => present,
-    source  => 'puppet:///modules/etherpad_lite/robots.txt',
+    source  => 'puppet:///modules/ethercalc/robots.txt',
     owner   => 'root',
     group   => 'root',
     mode    => '0444',
