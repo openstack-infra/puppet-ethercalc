@@ -69,7 +69,7 @@ class ethercalc (
 
   exec { 'install-ethercalc':
     command => "npm install ethercalc@${ethercalc_version}",
-    unless  => "npm ls --parseable | grep ethercalc@${ethercalc_version}",
+    unless  => "npm ls | grep ethercalc@${ethercalc_version}",
     path    => $path,
     cwd     => $base_install_dir,
     require => Anchor['nodejs-anchor'],
