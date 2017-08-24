@@ -40,8 +40,10 @@ class ethercalc (
     mode   => '0664',
   }
 
-  package { 'curl':
-    ensure => present,
+  if !defined(Package['curl']) {
+    package { 'curl':
+      ensure => present,
+    }
   }
 
   anchor { 'nodejs-package-install': }
