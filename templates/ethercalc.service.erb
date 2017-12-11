@@ -1,0 +1,15 @@
+[Unit]
+Description=ethercalc (real-time collaborative spreadsheet editing)
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=<%= @ethercalc_user %>
+Group=<%= @ethercalc_user %>
+ExecStart=/bin/bash <%= @base_install_dir %>/node_modules/ethercalc/bin/run.sh
+LimitNOFILE=8192:16384
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target

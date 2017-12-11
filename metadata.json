@@ -10,6 +10,6 @@
   "dependencies": [
     {"name":"openstackinfra/httpd"},
     {"name":"openstackinfra/redis"},
-    {"name":"voxpupuli/nodejs"}
+    {"name":"puppet/nodejs"}
   ]
 }
