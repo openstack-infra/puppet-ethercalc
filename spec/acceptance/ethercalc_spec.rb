@@ -15,6 +15,10 @@ describe 'puppet-ethercalc:: manifest', :if => ['debian', 'ubuntu'].include?(os[
     apply_manifest(init_puppet_module, catch_failures: true)
   end
 
+  it 'should be idempotent' do
+    apply_manifest(init_puppet_module, catch_changes: true)
+  end
+
   describe 'required packages' do
     describe 'os packages' do
       required_packages = [
@@ -36,19 +40,16 @@ describe 'puppet-ethercalc:: manifest', :if => ['debian', 'ubuntu'].include?(os[
     end
   end
 
-  # TODO(ianw): not quite reliable ... possibly need this in a retry
-  # loop for a little to let the service start up?
+  describe 'required services' do
+    describe 'ports are open and services are reachable' do
+      describe port(8000) do
+        it { should be_listening }
+      end
 
-  # describe 'required services' do
-  #   describe 'ports are open and services are reachable' do
-  #     describe port(8000) do
-  #       it { should be_listening }
-  #     end
-
-  #     describe command('curl http://localhost:8000 --verbose') do
-  #       its(:stdout) { should contain('EtherCalc - Share the URL to your friends') }
-  #     end
-  #   end
-  # end
+      describe command('curl http://localhost:8000 --verbose') do
+        its(:stdout) { should contain('EtherCalc - Share the URL to your friends') }
+      end
+    end
+  end
 
 end
