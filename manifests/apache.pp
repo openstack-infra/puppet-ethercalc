@@ -152,9 +152,10 @@ class ethercalc::apache (
   }
 
   file { '/etc/ssl/private':
-    ensure => directory,
-    owner  => 'root',
-    mode   => '0700',
+    ensure  => directory,
+    owner   => 'root',
+    mode    => '0700',
+    require => Package['ssl-cert'],
   }
 
   if $ssl_cert_file_contents != '' {

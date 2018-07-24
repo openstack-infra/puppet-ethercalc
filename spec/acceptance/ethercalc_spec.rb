@@ -49,6 +49,10 @@ describe 'puppet-ethercalc:: manifest', :if => ['debian', 'ubuntu'].include?(os[
       describe command('curl http://localhost:8000 --verbose') do
         its(:stdout) { should contain('EtherCalc - Share the URL to your friends') }
       end
+
+      describe command('curl -L -k http://localhost --verbose') do
+        its(:stdout) { should contain('EtherCalc - Share the URL to your friends') }
+      end
     end
   end
 
