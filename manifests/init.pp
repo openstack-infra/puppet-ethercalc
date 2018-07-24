@@ -103,6 +103,20 @@ class ethercalc (
     require => Anchor['nodejs-package-install'],
   }
 
+  # NOTE(cmurphy) Workaround global install issue
+  # https://github.com/audreyt/ethercalc/issues/542
+  if ($use_nodejs_version == '6.x') {
+    file { "${base_install_dir}/node_modules/ethercalc/node_modules":
+      ensure  => directory,
+      require => [File[$base_install_dir], Exec['install-ethercalc']],
+    }
+    file { "${base_install_dir}/node_modules/ethercalc/node_modules/socialcalc":
+      ensure  => link,
+      target  => "${base_install_dir}/node_modules/socialcalc",
+      require => File["${base_install_dir}/node_modules/ethercalc/node_modules"],
+    }
+  }
+
   # TODO(ianw): remove this when trusty is dropped
   if $use_upstart {
 
