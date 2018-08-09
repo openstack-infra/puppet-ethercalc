@@ -27,7 +27,7 @@ class ethercalc (
   # file
   case $::operatingsystem {
     'Ubuntu': {
-      if $::operatingsystemrelease <= '14.04' {
+      if versioncmp($::operatingsystemrelease, '14.04') <= 0 {
         $use_upstart = true
         if ! $nodejs_version {
           $use_nodejs_version = '4.x'
