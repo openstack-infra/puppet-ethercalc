@@ -1,3 +1,3 @@
-# OpenStack Ethercalc Module
+# This repo has moved to OpenDev
 
-This module installs and configures Ethercalc
+It can now be found at [https://opendev.org/opendev/puppet-ethercalc](https://opendev.org/opendev/puppet-ethercalc)
